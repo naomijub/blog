@@ -225,6 +225,28 @@
 <li>Working on games with my son.</li>
 <li>Lastly, I like Genetic Algorithms, Fuzzy Logic and Natural language Processing</li>
 </ul>
+<h2 id="cool-open-source-work"><a class="header" href="#cool-open-source-work">Cool Open Source Work:</a></h2>
+<ul>
+<li><a href="https://github.com/naomijub/wooridb">WooriDB - Time Serial Database</a></li>
+<li><a href="https://github.com/naomijub/brcode">Brcode - PIX QR Code parser</a></li>
+<li><a href="https://github.com/rewin123/space_editor">Space Editor - Bevy Engine Game Editor</a></li>
+<li><a href="https://github.com/naomijub/tokio-retry">tokio_retry2 - Extensible, asynchronous retry behaviours for tokio</a></li>
+<li><a href="https://github.com/naomijub/Observable-btree">Observable Trees - Fully tokio async channeled trees, no extra deps</a></li>
+<li><a href="https://github.com/naomijub/bevy_chess">Bevy Chess Game - 0.14</a></li>
+<li><a href="https://github.com/naomijub/edn-rs">edn-rs - Rust EDN (de)serializer</a></li>
+<li><a href="https://github.com/otaviopace/edn-derive">edn-derive - Rust EDN macro (de)serializer</a></li>
+<li><a href="https://github.com/naomijub/transistor">Transistor - Rust CruxDB Client</a></li>
+<li><a href="https://github.com/naomijub/translixir">Translixir - Elixir CruxDB Client</a></li>
+<li>Elixir EDN libs: <a href="https://github.com/jfacorro/Eden">Eden</a> and <a href="https://github.com/psfblair/exdn">exdn</a></li>
+<li><a href="https://github.com/naomijub/hiccup">Hiccup - html templating macro in Rust</a></li>
+<li><a href="https://github.com/naomijub/rust-compose">Composing functions with Rust</a></li>
+<li><a href="https://github.com/naomijub/JVM-rust-ffi">Exploring FFI between JVM and Rust</a></li>
+<li><a href="https://github.com/naomijub/DiammondSeek">DiammondSeek - Simple game in Java</a></li>
+<li><a href="https://github.com/naomijub/rust-exercism">Rust Exercism Solutions</a></li>
+<li><a href="https://github.com/GameTDD/TDD-on-Unity">TDD on Unity - Random Game</a></li>
+<li><a href="https://github.com/naomijub/kotlin-exercism">Kotlin Exercism Solutions</a></li>
+<li><a href="https://github.com/TrioDeTres/MarioKart-5.4">Mario Kart Multiplayer Demo in Unity 5</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="functional-programming"><a class="header" href="#functional-programming">Functional Programming</a></h1>
 <div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
 <tr><td>2024-12-15</td><td>Insights on Functional Programming</td><td>Functional Programming, Insights, Guide</td></tr>
@@ -321,7 +343,7 @@ Explanation: In this case, no transactions are done and the max profit = 0.
         .1
 }
 <span class="boring">}</span></code></pre></pre>
-<p>To begin, we create an iterator, <code>prices.iter()</code>, then we consume this iterator with a <code>fold</code>, where the <code>accumulator</code> is a tuple consisting of the minimal value, same as before, and a maximum profit starting as <code>0</code>. Then, in the <code>fold</code> loop, we alreay return a tuple containing the new minimum, <code>value.min(min)</code>, as the first element, and the new maximum profit <code>max_profit.max(value - min)</code>, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.</p>
+<p>To begin, we create an iterator, <code>prices.iter()</code>, then we consume this iterator with a <code>fold</code>, where the <code>accumulator</code> is a tuple consisting of the minimal value, same as before, and a maximum profit starting as <code>0</code>. Then, in the <code>fold</code> loop, we already return a tuple containing the new minimum, <code>value.min(min)</code>, as the first element, and the new maximum profit <code>max_profit.max(value - min)</code>, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.</p>
 <h2 id="best-time-to-buy-and-sell-stock-medium122"><a class="header" href="#best-time-to-buy-and-sell-stock-medium122">Best Time to Buy and Sell Stock (Medium/122):</a></h2>
 <p>"<em>You are given an integer array prices where <code>prices[i]</code> is the price of a given stock on the ith day.</em></p>
 <p><em>On each day, you may decide to buy and/or sell the stock. You can only <strong>hold at most one share of the stock at any time</strong>. However, you can buy it then immediately sell it on the <strong>same day</strong></em>.</p>
@@ -382,7 +404,7 @@ Explanation: There is no way to make a positive profit, so we never buy the stoc
 <tr><td>2024-12-11</td><td>Leetcode - problem 88, merge sorted arrays in Rust</td><td>Leetcode, 88</td></tr>
 </tbody></table>
 </div>
-<p>I wanted to start with some exercises that allow us to discuss functional problem solving exercises from platforms like Leetcode, Codility and Exercism.org. Among all this platforms, I would say leetcode is the most well known, but exercism is my favorite due to the very complete and transparnt test cases. However, recently, I have been asked to live code in a mob session in Rust, Clojure and Go of leetcode problems, so this series is a representation of those sessions.</p>
+<p>I wanted to start with some exercises that allow us to discuss functional problem solving exercises from platforms like Leetcode, Codility and Exercism.org. Among all this platforms, I would say leetcode is the most well known, but exercism is my favorite due to the very complete and transparent test cases. However, recently, I have been asked to live code in a mob session in Rust, Clojure and Go of leetcode problems, so this series is a representation of those sessions.</p>
 <h2 id="merge-sorted-arrays"><a class="header" href="#merge-sorted-arrays">Merge Sorted Arrays:</a></h2>
 <p>Leetcode gives us the following statement:</p>
 <p>"<em>You are given two integer arrays <code>nums1</code> and <code>nums2</code>, <strong>sorted</strong> in <strong>non-decreasing order</strong>, and two integers <code>m</code> and <code>n</code>, representing the number of elements in <code>nums1</code> and <code>nums2</code> <strong>respectively</strong>.</em></p>

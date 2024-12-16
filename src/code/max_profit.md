@@ -73,7 +73,7 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
 ```
 
 
-To begin, we create an iterator, `prices.iter()`, then we consume this iterator with a `fold`, where the `accumulator` is a tuple consisting of the minimal value, same as before, and a maximum profit starting as `0`. Then, in the `fold` loop, we alreay return a tuple containing the new minimum, `value.min(min)`, as the first element, and the new maximum profit `max_profit.max(value - min)`, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.
+To begin, we create an iterator, `prices.iter()`, then we consume this iterator with a `fold`, where the `accumulator` is a tuple consisting of the minimal value, same as before, and a maximum profit starting as `0`. Then, in the `fold` loop, we already return a tuple containing the new minimum, `value.min(min)`, as the first element, and the new maximum profit `max_profit.max(value - min)`, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.
 
 ##  Best Time to Buy and Sell Stock (Medium/122):
 

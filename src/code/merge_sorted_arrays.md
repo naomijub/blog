@@ -4,7 +4,7 @@
 |--------- |--------------------------------------------------- |----------- |
 |2024-12-11| Leetcode - problem 88, merge sorted arrays in Rust |Leetcode, 88|
 
-I wanted to start with some exercises that allow us to discuss functional problem solving exercises from platforms like Leetcode, Codility and Exercism.org. Among all this platforms, I would say leetcode is the most well known, but exercism is my favorite due to the very complete and transparnt test cases. However, recently, I have been asked to live code in a mob session in Rust, Clojure and Go of leetcode problems, so this series is a representation of those sessions.
+I wanted to start with some exercises that allow us to discuss functional problem solving exercises from platforms like Leetcode, Codility and Exercism.org. Among all this platforms, I would say leetcode is the most well known, but exercism is my favorite due to the very complete and transparent test cases. However, recently, I have been asked to live code in a mob session in Rust, Clojure and Go of leetcode problems, so this series is a representation of those sessions.
 
 ## Merge Sorted Arrays:
 

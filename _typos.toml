@@ -1,0 +1,7 @@
+[files]
+extend-exclude = [
+    "docs/*"
+]
+
+[default.extend-words]
+EDN = "EDN"
