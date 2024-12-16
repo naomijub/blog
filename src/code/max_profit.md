@@ -1,11 +1,9 @@
----
-title: Best Time to Buy and Sell Stock
-date: 2024-12-09
-description: "Leetcode - problems 121 and 122, Best Time to Buy and Sell Stock in Rust"
-keywords: "Leetcode, 121, 122,  Best Time to Buy and Sell Stock, Rust"
----
-
 #  Best Time to Buy and Sell Stock in Rust
+
+|date | Description | Keywords |
+|--------- |------------------------------------------------------------------------- |----------------- |
+|2024-12-14| Leetcode - problems 121 and 122, Best Time to Buy and Sell Stock in Rust |Leetcode, 121, 122|
+
 
 Leetcode has two best time to sell problems that I have solved, one easy and one medium. Here we will take a look at both, starting from the easy then going to the medium.
 
@@ -22,10 +20,6 @@ _Return the maximum profit you can achieve from this transaction. If you cannot 
 ### Example cases:
 
 * Example 1:
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">YAML</p>
-    </div>
 
 ```yaml
 Input: prices = [7,1,5,3,6,4]
@@ -34,21 +28,13 @@ Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-
 Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.
 ```
 
-</div>
-
 * Example 2:
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">YAML</p>
-    </div>
 
 ```yaml
 Input: prices = [7,6,4,3,1]
 Output: 0
 Explanation: In this case, no transactions are done and the max profit = 0.
 ```
-
-</div>
 
 ### Constraints
 
@@ -58,11 +44,6 @@ Explanation: In this case, no transactions are done and the max profit = 0.
 ## My Solution:
 
 This is a pretty straight forward problem, you have a vector of elements, where all elements are larger or equal to zero and you need to identify the maximum and the minimum of this vector. You can achieve this by iterating over all elements and preserving the minimum and the maximum difference for each element. In a procedural approach, this would mean:
-
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">Rust</p>
-    </div>
 
 ```rust
 pub fn max_profit(prices: Vec<i32>) -> i32 {
@@ -78,8 +59,6 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
 }
 ```
 
-</div>
-
 So, we create two variables to control `min`, which starts as anything above `104` (second constraint, but `i32::MAX` works beyond that constraint) and `max_profit`, that should start as zero in case we do not find any maximum value. Then we loop over all elements and reassign `min` and `max_profit` for the current `value`. Definitvely works, and is quite uncomplex solution with constant value allocation and a simple loop over `n` (`prices.len()`). Now we need to transition this to a functional solution, which in this case is have an **iterator consumer** and **immutable data**:
 
 ```rust
@@ -93,7 +72,6 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
 }
 ```
 
-</div>
 
 To begin, we create an iterator, `prices.iter()`, then we consume this iterator with a `fold`, where the `accumulator` is a tuple consisting of the minimal value, same as before, and a maximum profit starting as `0`. Then, in the `fold` loop, we alreay return a tuple containing the new minimum, `value.min(min)`, as the first element, and the new maximum profit `max_profit.max(value - min)`, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.
 
@@ -108,10 +86,6 @@ _Find and return the **maximum profit** you can achieve._"
 ### Example cases:
 
 * Example 1:
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">YAML</p>
-    </div>
 
 ```yaml
 Input: prices = [7,1,5,3,6,4]
@@ -121,13 +95,7 @@ Then buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.
 Total profit is 4 + 3 = 7.
 ```
 
-</div>
-
 * Example 2:
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">YAML</p>
-    </div>
 
 ```yaml
 Input: prices = [1,2,3,4,5]
@@ -136,21 +104,14 @@ Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-
 Total profit is 4.
 ```
 
-</div>
 
 * Example 3:
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">YAML</p>
-    </div>
 
 ```yaml
 Input: prices = [7,6,4,3,1]
 Output: 0
 Explanation: There is no way to make a positive profit, so we never buy the stock to achieve the maximum profit of 0.
 ```
-
-</div>
 
 ### Constraints
 
@@ -161,10 +122,6 @@ Explanation: There is no way to make a positive profit, so we never buy the stoc
 
 This problem is a bit more flexible as we can buy and sell in the same day, which means we can use a method that traverses the vector two by two, `windows`. This method allows us to traverse the following array `[1, 2, 3, 4]`, in the following manner `[[1, 2], [2, 3], [3,4]]`. This means that for the example `[7,1,5,3,6,4]`, we get the following results `[[7,1], [1,5], [5,3], [3,6], [6,4]]`, if we filter out the results where the second element is smaller than the first we get `[[1,5], [3,6]]`, which means a maximum profit of `(5 - 1) + (6 - 3)`. This works well even with se quentially increasing number like `[1, 2, 3, 4, 5, 6, 7]`. Considering this, the trivial answer would be:
 
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">Rust</p>
-    </div>
 
 ```rust
 pub fn max_profit(prices: Vec<i32>) -> i32 {
@@ -175,14 +132,7 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
 }
 ```
 
-</div>
-
 Where we iterate over prices two by two, filtering out all pairs where the second element is smaller than the first, so we map their difference and sum all the values. Note that sum starts at `zero`. Even if this is a good solution, I figured there is an even better approach to this, which results in one less line of code:
-
-<div class="bg-zinc-900 overflow-hidden rounded-md">
-    <div class="flex justify-between px-4 items-center text-xs text-white">
-        <p class="text-sm">Rust</p>
-    </div>
 
 ```rust
 pub fn max_profit(prices: Vec<i32>) -> i32 {
@@ -191,7 +141,5 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
         .sum()
 }
 ```
-
-</div>
 
 In this new solution, we replace the `filter` with a `map` operation that gets the maximum value between `zero` and the difference between prices (`price[1] - price[0]`). This means that if `price[0] >= price[1]`, the map will return `0`, allowing us to remove the `filter` line.

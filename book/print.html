@@ -1,0 +1,583 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Naomijub&#x27;s Blog</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Naomijub&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="naomijubs-blog"><a class="header" href="#naomijubs-blog">Naomijub's Blog</a></h1>
+<p>Welcome to my blog!</p>
+<p>This blog is where I share my ideas and processes regarding software engineer, functional programming, Rust, best practices and game development.</p>
+<h3 id="where-to-find-me-"><a class="header" href="#where-to-find-me-">Where to find me 📬:</a></h3>
+<a href="https://www.linkedin.com/in/naomijub">
+ <img width="28" src="https://user-images.githubusercontent.com/14813660/170812779-06f9dc9a-7041-4d36-8710-2b4706664860.png" />
+</a>
+<br/>
+<h2 id="who-am-i"><a class="header" href="#who-am-i">Who am I?</a></h2>
+<p>I'm a lead software engineer with experience in web services, project migrations, Rust and cloud. Some notable places I've worked are:</p>
+<ul>
+<li>Nubank as Lead Software Engineer:
+<ul>
+<li>I worked on integrating transfers (Pix) and payments to checkings account. The technologies I used were <code>Clojure</code>, <code>Apache Kafka</code>, <code>Datomic</code>, <code>AWS</code>, <code>Flutter</code>.</li>
+<li><a href="https://github.com/naomijub/edn-rs">Edn-rs</a>, <code>Clojure</code>'s <code>EDN</code> format support for <code>Rust</code></li>
+<li><a href="https://github.com/evaporei/edn-derive">Edn-derive</a>, derive macros for edn-rs</li>
+<li><a href="https://github.com/naomijub/brcode">Brcode</a>, Pix QR Code parser in <code>Rust</code> with FFI versions in <code>Dart</code>, <code>Clojure</code>, <code>Typescipr</code>, <code>Java</code>.</li>
+</ul>
+</li>
+<li>Ubisoft as Team Lead Programmer:
+<ul>
+<li>I worked on online services for an unannounced production. <code>Rust</code>, <code>AWS</code> (Lambdas, DynamoDB, S3, etc), <code>Terraform</code>, <code>Kubernetes</code>, <code>Prometheus</code>, <code>Grafana</code>, <code>Unreal Engine</code>, <code>Apache Kafka</code>, <code>C++</code>.</li>
+<li>I worked as lead developer experience for Rainbow Six Mobile, improving content creators and programmers usage on tools and online services. <code>C#</code>, <code>Unity</code>, <code>Prometheus</code>, <code>Grafana</code>, <code>SQLite</code>.</li>
+</ul>
+</li>
+<li>Thoughtworks as Tech Lead:
+<ul>
+<li>Microservices migrations. Notable works are:
+<ul>
+<li><code>Java 7</code> + <code>Spring</code> + <code>MySQL</code> service to <code>Rust</code> + <code>MySQL/Cassandra</code> microservice, which had a huge cost reduction and increased performance.</li>
+<li><code>Java 8</code> + <code>Spring</code> service to <code>Clojure</code> + <code>Pedestal</code> microservice. Fun fact the Clojure service had less lines of code than the java service had classes (Not include tests).</li>
+<li><code>Java 7</code> + Spring service to <code>Java 8</code> + <code>Spark</code> + <code>Spring Boot</code> microservices using a <strong>functional programming</strong> approach.</li>
+<li><code>Ruby on Rails</code> monolith to <code>Elixir</code> microservices.</li>
+</ul>
+</li>
+<li>SRE, developed a state of the art system to monitor the state of the website.
+<ol>
+<li><strong>Natural language processing</strong> service written in <code>Rust</code> that scrapped social media to detect user comments on problems the werbsite had.</li>
+<li>Using <code>sitespeed.io</code> scripts, we actively navigated the web site detecting latency, flow issues, inconsistencies and crashes.</li>
+<li>Created a <code>kubernetes</code> clusters that held all the data and had a good developer experience for service developers to integrate and manage.</li>
+</ol>
+</li>
+<li>Lead Studio XR Researcher creatring prototypes to showcase in <code>Unity</code> and <code>Vuforia</code>:
+<ul>
+<li>AR Pokemon inspired card game.</li>
+<li>Luggage analyzer and trip visualizer.</li>
+<li>VR Airplane replair mechanical training.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>I also wrote a few books for APress and Casa do Codigo:</p>
+<ul>
+<li>📖 <a href="https://www.casadocodigo.com.br/products/livro-rust-funcional-concorrente">Functional and Concurrent Programming in Rust - Casa do Código</a></li>
+<li>📖 <a href="https://link.springer.com/book/10.1007/978-1-4842-9843-5">Lean Game Development - Edition 2 - English - Apress</a></li>
+<li>📖 <a href="https://www.apress.com/gp/book/9781484232156">Lean Game Development - Edition 1 - English - Apress</a></li>
+<li>📖 <a href="https://www.casadocodigo.com.br/products/livro-lean-game-development">Lean Game Development - Portuguese - Casa do Código</a></li>
+<li>📖 <a href="https://www.casadocodigo.com.br/products/livro-tdd-games">TDD For Games - Casa do Código</a></li>
+</ul>
+<h2 id="stuff-i-like"><a class="header" href="#stuff-i-like">Stuff I like:</a></h2>
+<ul>
+<li>Gender equality and LGBTIQ+</li>
+<li>Card and Board games</li>
+<li>Databases, I'm really interested in relational-like time serial database. My pet project on this is <a href="https://github.com/naomijub/wooridb">WooriDB</a>.</li>
+<li>Rust FFI, did a few cool projects exploring FFI in Rust <a href="https://github.com/naomijub/JVM-rust-ffi">JVM/Rust FFI</a>.</li>
+<li>I have a lot of pet projects with Procedural Content Generation and Voxels</li>
+<li>I have a few pet projects with AR/VR</li>
+<li>I love to collaborate with ECS/Bevy stuff <a href="https://github.com/rewin123/space_editor">Space editor</a> and <a href="https://github.com/naomijub/bevy-inspector-ui">bevy-inspector</a></li>
+<li>Working on games with my son.</li>
+<li>Lastly, I like Genetic Algorithms, Fuzzy Logic and Natural language Processing</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-programming"><a class="header" href="#functional-programming">Functional Programming</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
+<tr><td>2024-12-15</td><td>Insights on Functional Programming</td><td>Functional Programming, Insights, Guide</td></tr>
+</tbody></table>
+</div>
+<p>How can we start a functional programming-centred blog without talking about functional programming? Although I started programming with C++ version 98, I'm far from a fan of object-oriented programming. Back then, my code was mostly imperative and procedural. Same goes with Python, the second language I learned. Things started changing when I was doing my bachelor's in applied mathematics and my dislike for MatLab, which made me search for classes that were using anything but MatLab, which meant Haskell and Lisp. Lisp had a very interesting approach for a mathematician, as it used the same computational logic as my graphic HP calculator, so I would always aim for classes that were in Lisp (or, for some weird reason, Pascal).</p>
+<p>Fast forward over a decade, and everyone that has personally talked to me about programming knows I am passionate about functional programming, and more so, I have experience making non-fp code bases become functional, as well as writing a lot of content about functional programming, especially in Rust, Java, C# and Clojure. So the passion is evident, but <strong>what are the benefits of FP?</strong></p>
+<ul>
+<li>
+<p><strong>Referential Transparency</strong>, with the use of pure functions your objects don't necessary own data and mutate their own state, you start having Instances/Namespaces/Objects that act on data passed to them, helping testability and providing a safer and more predictable way to understand the state of your data.</p>
+</li>
+<li>
+<p><strong>Immutability</strong>. At one point, I read in a Clojure book about the fact that if you have mutability, you know nothing about the state of your application, and so, you cannot make any predictions about its behaviour. This is not the case when you deal with immutable code, at any moment in time, when you take a snapshot of your data, you can clearly predict its next state based on <code>x, y, z</code> functions.</p>
+</li>
+<li>
+<p><strong>Composition and higher order functions</strong> are another key aspect and has a lot to do with a simpler way to deal with functions that contain side effects. By using composition, we can always guarantee that our code is predictable, a very interesting feature for testing. Let's use the general example of random data. I have a function that needs to define the initial direction something is moving, but that direction cannot be always the same, so we need random data. However, it makes it very hard to test, as we now have lost prediction of results. However, by passing a function that handles randomize data, we mock that function in test cases to return a desired value.</p>
+</li>
+<li>
+<p><strong>Concurrency</strong>. Off-course concurrency is not a functional programming restricted topic, but the previous attributes that we discussed, make it so much clearer on how to deal with it.</p>
+</li>
+</ul>
+<blockquote>
+<p>A few books that I can recommend for learning how to become functional thinking or how expand your fp insights are:</p>
+</blockquote>
+<ul>
+<li>Clojure Applied by Ben Vandgrift and Alex Miller</li>
+<li>Domain Modeling Made Functional by Scott Wlaschin</li>
+<li>Adopting Elixir by Ben Marx, Bruce Tate and José Valim</li>
+<li>Becoming Functional by Joshua Backfield</li>
+<li>Functional Thinking by Neal Ford</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="my-coding-problems-and-code-examples"><a class="header" href="#my-coding-problems-and-code-examples">My Coding Problems and Code Examples</a></h1>
+<ul>
+<li><a href="./code/max_profit.html">2024-12-14: Leetcode 121 and 122 - Max Profit</a></li>
+<li><a href="./code/merge_sorted_arrays.html">2024-12-11: Leetcode 88 - Merge Sorted Arrays</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="best-time-to-buy-and-sell-stock-in-rust"><a class="header" href="#best-time-to-buy-and-sell-stock-in-rust">Best Time to Buy and Sell Stock in Rust</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
+<tr><td>2024-12-14</td><td>Leetcode - problems 121 and 122, Best Time to Buy and Sell Stock in Rust</td><td>Leetcode, 121, 122</td></tr>
+</tbody></table>
+</div>
+<p>Leetcode has two best time to sell problems that I have solved, one easy and one medium. Here we will take a look at both, starting from the easy then going to the medium.</p>
+<h2 id="best-time-to-buy-and-sell-stock-easy121"><a class="header" href="#best-time-to-buy-and-sell-stock-easy121">Best Time to Buy and Sell Stock (Easy/121):</a></h2>
+<p>Leetcode gives us the following statement:</p>
+<p>"<em>You are given an array prices where <code>prices[i]</code> is the <strong>price of a given stock on the ith day</strong>.</em></p>
+<p><em>You want to <strong>maximize your profit</strong> by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.</em></p>
+<p><em>Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return <code>0</code>.</em>"</p>
+<h3 id="example-cases"><a class="header" href="#example-cases">Example cases:</a></h3>
+<ul>
+<li>Example 1:</li>
+</ul>
+<pre><code class="language-yaml">Input: prices = [7,1,5,3,6,4]
+Output: 5
+Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
+Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.
+</code></pre>
+<ul>
+<li>Example 2:</li>
+</ul>
+<pre><code class="language-yaml">Input: prices = [7,6,4,3,1]
+Output: 0
+Explanation: In this case, no transactions are done and the max profit = 0.
+</code></pre>
+<h3 id="constraints"><a class="header" href="#constraints">Constraints</a></h3>
+<ul>
+<li><code>1 &lt;= prices.length &lt;= 105</code></li>
+<li><code>0 &lt;= prices[i] &lt;= 104</code></li>
+</ul>
+<h2 id="my-solution"><a class="header" href="#my-solution">My Solution:</a></h2>
+<p>This is a pretty straight forward problem, you have a vector of elements, where all elements are larger or equal to zero and you need to identify the maximum and the minimum of this vector. You can achieve this by iterating over all elements and preserving the minimum and the maximum difference for each element. In a procedural approach, this would mean:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn max_profit(prices: Vec&lt;i32&gt;) -&gt; i32 {
+    let mut min = i32::MAX;
+    let mut max_profit = 0;
+
+    for value in prices {
+        min = value.min(min);
+        max_profit = max_profit.max(value - min);
+    }
+
+    max_profit
+}
+<span class="boring">}</span></code></pre></pre>
+<p>So, we create two variables to control <code>min</code>, which starts as anything above <code>104</code> (second constraint, but <code>i32::MAX</code> works beyond that constraint) and <code>max_profit</code>, that should start as zero in case we do not find any maximum value. Then we loop over all elements and reassign <code>min</code> and <code>max_profit</code> for the current <code>value</code>. Definitvely works, and is quite uncomplex solution with constant value allocation and a simple loop over <code>n</code> (<code>prices.len()</code>). Now we need to transition this to a functional solution, which in this case is have an <strong>iterator consumer</strong> and <strong>immutable data</strong>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn max_profit(prices: Vec&lt;i32&gt;) -&gt; i32 {
+    prices
+        .iter()
+        .fold((i32::MAX, 0), |(min, max_profit), &amp;value| {
+            (value.min(min), max_profit.max(value - min))
+        })
+        .1
+}
+<span class="boring">}</span></code></pre></pre>
+<p>To begin, we create an iterator, <code>prices.iter()</code>, then we consume this iterator with a <code>fold</code>, where the <code>accumulator</code> is a tuple consisting of the minimal value, same as before, and a maximum profit starting as <code>0</code>. Then, in the <code>fold</code> loop, we alreay return a tuple containing the new minimum, <code>value.min(min)</code>, as the first element, and the new maximum profit <code>max_profit.max(value - min)</code>, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.</p>
+<h2 id="best-time-to-buy-and-sell-stock-medium122"><a class="header" href="#best-time-to-buy-and-sell-stock-medium122">Best Time to Buy and Sell Stock (Medium/122):</a></h2>
+<p>"<em>You are given an integer array prices where <code>prices[i]</code> is the price of a given stock on the ith day.</em></p>
+<p><em>On each day, you may decide to buy and/or sell the stock. You can only <strong>hold at most one share of the stock at any time</strong>. However, you can buy it then immediately sell it on the <strong>same day</strong></em>.</p>
+<p><em>Find and return the <strong>maximum profit</strong> you can achieve.</em>"</p>
+<h3 id="example-cases-1"><a class="header" href="#example-cases-1">Example cases:</a></h3>
+<ul>
+<li>Example 1:</li>
+</ul>
+<pre><code class="language-yaml">Input: prices = [7,1,5,3,6,4]
+Output: 7
+Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.
+Then buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.
+Total profit is 4 + 3 = 7.
+</code></pre>
+<ul>
+<li>Example 2:</li>
+</ul>
+<pre><code class="language-yaml">Input: prices = [1,2,3,4,5]
+Output: 4
+Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.
+Total profit is 4.
+</code></pre>
+<ul>
+<li>Example 3:</li>
+</ul>
+<pre><code class="language-yaml">Input: prices = [7,6,4,3,1]
+Output: 0
+Explanation: There is no way to make a positive profit, so we never buy the stock to achieve the maximum profit of 0.
+</code></pre>
+<h3 id="constraints-1"><a class="header" href="#constraints-1">Constraints</a></h3>
+<ul>
+<li><code>1 &lt;= prices.length &lt;= 3 * 104</code></li>
+<li><code>0 &lt;= prices[i] &lt;= 104</code></li>
+</ul>
+<h2 id="my-solution-1"><a class="header" href="#my-solution-1">My Solution:</a></h2>
+<p>This problem is a bit more flexible as we can buy and sell in the same day, which means we can use a method that traverses the vector two by two, <code>windows</code>. This method allows us to traverse the following array <code>[1, 2, 3, 4]</code>, in the following manner <code>[[1, 2], [2, 3], [3,4]]</code>. This means that for the example <code>[7,1,5,3,6,4]</code>, we get the following results <code>[[7,1], [1,5], [5,3], [3,6], [6,4]]</code>, if we filter out the results where the second element is smaller than the first we get <code>[[1,5], [3,6]]</code>, which means a maximum profit of <code>(5 - 1) + (6 - 3)</code>. This works well even with se quentially increasing number like <code>[1, 2, 3, 4, 5, 6, 7]</code>. Considering this, the trivial answer would be:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn max_profit(prices: Vec&lt;i32&gt;) -&gt; i32 {
+    prices.windows(2)
+        .filter(|price| price[0] &lt; price[1])
+        .map(|price| price[1] - price[0])
+        .sum()
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Where we iterate over prices two by two, filtering out all pairs where the second element is smaller than the first, so we map their difference and sum all the values. Note that sum starts at <code>zero</code>. Even if this is a good solution, I figured there is an even better approach to this, which results in one less line of code:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn max_profit(prices: Vec&lt;i32&gt;) -&gt; i32 {
+    prices.windows(2)
+        .map(|price| 0.max(price[1] - price[0]))
+        .sum()
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In this new solution, we replace the <code>filter</code> with a <code>map</code> operation that gets the maximum value between <code>zero</code> and the difference between prices (<code>price[1] - price[0]</code>). This means that if <code>price[0] &gt;= price[1]</code>, the map will return <code>0</code>, allowing us to remove the <code>filter</code> line.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="merge-sorted-arrays-in-rust"><a class="header" href="#merge-sorted-arrays-in-rust">Merge Sorted Arrays in Rust</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
+<tr><td>2024-12-11</td><td>Leetcode - problem 88, merge sorted arrays in Rust</td><td>Leetcode, 88</td></tr>
+</tbody></table>
+</div>
+<p>I wanted to start with some exercises that allow us to discuss functional problem solving exercises from platforms like Leetcode, Codility and Exercism.org. Among all this platforms, I would say leetcode is the most well known, but exercism is my favorite due to the very complete and transparnt test cases. However, recently, I have been asked to live code in a mob session in Rust, Clojure and Go of leetcode problems, so this series is a representation of those sessions.</p>
+<h2 id="merge-sorted-arrays"><a class="header" href="#merge-sorted-arrays">Merge Sorted Arrays:</a></h2>
+<p>Leetcode gives us the following statement:</p>
+<p>"<em>You are given two integer arrays <code>nums1</code> and <code>nums2</code>, <strong>sorted</strong> in <strong>non-decreasing order</strong>, and two integers <code>m</code> and <code>n</code>, representing the number of elements in <code>nums1</code> and <code>nums2</code> <strong>respectively</strong>.</em></p>
+<p><em>Merge <code>nums1</code> and <code>nums2</code> into a single array sorted in non-decreasing order.</em></p>
+<p><em>The <strong>final sorted array should not be returned by the function</strong>, but instead be stored inside the array <code>nums1</code>. To accommodate this, <code>nums1</code> has a length of <code>m + n</code>, where the first <code>m</code> elements denote the elements that should be merged, and the last <code>n</code> elements are set to <code>0</code> and should be ignored. <code>nums2</code> has a length of <code>n</code>.</em>"</p>
+<h3 id="example-cases-2"><a class="header" href="#example-cases-2">Example cases:</a></h3>
+<ul>
+<li>Example 1:</li>
+</ul>
+<pre><code class="language-yaml">Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
+Output: [1,2,2,3,5,6]
+Explanation: The arrays we are merging are [1,2,3] and [2,5,6].
+The result of the merge is [1,2,2,3,5,6] with the underlined 
+elements coming from nums1.
+</code></pre>
+<ul>
+<li>Example 2:</li>
+</ul>
+<pre><code class="language-yaml">Input: nums1 = [1], m = 1, nums2 = [], n = 0
+Output: [1]
+Explanation: The arrays we are merging are [1] and [].
+The result of the merge is [1].
+</code></pre>
+<ul>
+<li>Example 3:</li>
+</ul>
+<pre><code class="language-yaml">Input: nums1 = [0], m = 0, nums2 = [1], n = 1
+Output: [1]
+Explanation: The arrays we are merging are [] and [1].
+The result of the merge is [1].
+Note that because m = 0, there are no elements in nums1. The 0 is only
+there to ensure the merge result can fit in nums1.
+</code></pre>
+<h3 id="constraints-2"><a class="header" href="#constraints-2">Constraints</a></h3>
+<ul>
+<li><code>nums1.length == m + n</code></li>
+<li><code>nums2.length == n</code></li>
+<li><code>0 &lt;= m, n &lt;= 200</code></li>
+<li><code>1 &lt;= m + n &lt;= 200</code></li>
+<li><code>-109 &lt;= nums1[i], nums2[j] &lt;= 109</code></li>
+</ul>
+<h2 id="naive-solution"><a class="header" href="#naive-solution">Naive Solution:</a></h2>
+<p>we can start by doing a simple for loop that iterates over the range of elements <code>(0..n)</code>, which means, all elements in <code>nums2</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
+    for nums2_index in (0..n) {
+        // ...
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Now, we know that we need to add each element of <code>nums2</code> to a position in <code>nums1</code>, starting in <code>m</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
+    for nums2_index in (0..n) {
+        nums1[(m + nums2_index) as usize] = nums2[nums2_index as usize];
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>With this, our array contains 2 sorted sections of arrays in <code>nums1</code>, so we could just call a simple rust sort there:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
+    for nums2_index in (0..n) {
+        nums1[(m + nums2_index) as usize] = nums2[nums2_index as usize];
+    }
+    nums1.sort();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>According to Leetcode, this has a Runtime of 1 ms and a Memory consumption of 2.1 MB, not a bad start.</p>
+<h2 id="less-procedural"><a class="header" href="#less-procedural">Less procedural</a></h2>
+<p>Rust has a great function to solve this problem and to solve my problem with for loops, it is called <code>splice</code>. <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.splice">Splice</a> receives a mutable reference to the vector, a range of points to splice (<code>replace_with</code>) the vector, and an <code>IntoIterator</code> to loop. The following code represents the solving of this problem with this function:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
+    let m = m as usize;
+    let n = n as usize;
+    let _ = nums1.splice(m..m+n, nums2.to_owned()).collect::&lt;Vec&lt;i32&gt;&gt;();
+    nums1.sort();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This is significantly more memory efficient than the for loop, that consumes around 2.19 MB, while this approach consumes only around 2.02 MB. However, performance wise, their are more or less the same. One thing I don't like in this exact code is <code>m+n</code> range ending, as we could consider for this problem <code>n+m == nums1.len()</code>, so the whole function would look like:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
+    let m = m as usize;
+    let _ = nums1.splice(m.., nums2.to_owned()).collect::&lt;Vec&lt;i32&gt;&gt;();
+    nums1.sort();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>"<em>But Julia! you are using std functions to solve this problem!</em>". Yes! young padawan, why recreate the wheel? But if you really want, here is a guide:</p>
+<ol>
+<li><em>Check if the first <code>m</code> elements are <code>0</code>, if they are, just replace them with <code>nums2</code>.</em></li>
+<li><em>Create an iterator for <code>nums2</code>.</em></li>
+<li><em>Loop over <code>nums1</code>, and if the <code>next</code> element in <code>nums2</code> iterator is less of equal to the current element in <code>nums1</code>, insert it in the list and pop the last element.</em></li>
+<li><em>Get the next element in <code>nums2</code> iterator.</em></li>
+</ol>
+<blockquote>
+<p>A pure functional approach in this problem is hard as we are dealing with mutability in <code>nums1</code>, but we could easily create a new vector from the originals ones and return it. This would be terrible memory wise as we are allocating a new vector full of new elements.</p>
+</blockquote>
+<p>For the previous guide, a more functional approach can be using fold and collecting the elements in a new vector. A pure functional way would require returning that list and avoiding mutability. However, that would fail leetcode test cases, so it will need to be assigned to <code>nums1</code>. I would risk saying that <code>m</code> and  <code>n</code> are useless in a more functional Rust.</p>
+<blockquote>
+<p>If you need help, you can open an issue in the repo</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="my-thoughts-on-software-engineering-and-programming"><a class="header" href="#my-thoughts-on-software-engineering-and-programming">My Thoughts on Software Engineering and Programming</a></h1>
+<ul>
+<li><a href="./blog/functional_programming.html">2024-12-15: Functional Programming</a></li>
+<li><a href="./blog/tech_debt.html">2024-12-10: Tech Debt</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-programming-1"><a class="header" href="#functional-programming-1">Functional Programming</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
+<tr><td>2024-12-15</td><td>Insights on Functional Programming</td><td>Functional Programming, Insights, Guide</td></tr>
+</tbody></table>
+</div>
+<p>How can we start a functional programming-centred blog without talking about functional programming? Although I started programming with C++ version 98, I'm far from a fan of object-oriented programming. Back then, my code was mostly imperative and procedural. Same goes with Python, the second language I learned. Things started changing when I was doing my bachelor's in applied mathematics and my dislike for MatLab, which made me search for classes that were using anything but MatLab, which meant Haskell and Lisp. Lisp had a very interesting approach for a mathematician, as it used the same computational logic as my graphic HP calculator, so I would always aim for classes that were in Lisp (or, for some weird reason, Pascal).</p>
+<p>Fast forward over a decade, and everyone that has personally talked to me about programming knows I am passionate about functional programming, and more so, I have experience making non-fp code bases become functional, as well as writing a lot of content about functional programming, especially in Rust, Java, C# and Clojure. So the passion is evident, but <strong>what are the benefits of FP?</strong></p>
+<ul>
+<li>
+<p><strong>Referential Transparency</strong>, with the use of pure functions your objects don't necessary own data and mutate their own state, you start having Instances/Namespaces/Objects that act on data passed to them, helping testability and providing a safer and more predictable way to understand the state of your data.</p>
+</li>
+<li>
+<p><strong>Immutability</strong>. At one point, I read in a Clojure book about the fact that if you have mutability, you know nothing about the state of your application, and so, you cannot make any predictions about its behaviour. This is not the case when you deal with immutable code, at any moment in time, when you take a snapshot of your data, you can clearly predict its next state based on <code>x, y, z</code> functions.</p>
+</li>
+<li>
+<p><strong>Composition and higher order functions</strong> are another key aspect and has a lot to do with a simpler way to deal with functions that contain side effects. By using composition, we can always guarantee that our code is predictable, a very interesting feature for testing. Let's use the general example of random data. I have a function that needs to define the initial direction something is moving, but that direction cannot be always the same, so we need random data. However, it makes it very hard to test, as we now have lost prediction of results. However, by passing a function that handles randomize data, we mock that function in test cases to return a desired value.</p>
+</li>
+<li>
+<p><strong>Concurrency</strong>. Off-course concurrency is not a functional programming restricted topic, but the previous attributes that we discussed, make it so much clearer on how to deal with it.</p>
+</li>
+</ul>
+<blockquote>
+<p>A few books that I can recommend for learning how to become functional thinking or how expand your fp insights are:</p>
+</blockquote>
+<ul>
+<li>Clojure Applied by Ben Vandgrift and Alex Miller</li>
+<li>Domain Modeling Made Functional by Scott Wlaschin</li>
+<li>Adopting Elixir by Ben Marx, Bruce Tate and José Valim</li>
+<li>Becoming Functional by Joshua Backfield</li>
+<li>Functional Thinking by Neal Ford</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tech-debt"><a class="header" href="#tech-debt">Tech Debt</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
+<tr><td>2024-12-10</td><td>What is tech debt and how to handle it</td><td>Tech Debt Recognition, Tech Debt</td></tr>
+</tbody></table>
+</div>
+<p>Between <em>"Do it quick"</em> and <em>"Do it right"</em>, I will always go with <em>"Do it right"</em>, which doesn't mean over engineering. It means we should avoid deliberate technical debt, as <a href="https://martinfowler.com/bliki/TechnicalDebtQuadrant.html">Martin Fowler</a> defines in the tech debt quadrants between reckless/prudent and deliberate/inadvertent (figure 1). This is different from inadvertent technical debt, which usually means a tech debt that we realized we had later.</p>
+<p><img src="blog/../images/blog/tech_debt_quadrant.png" alt="Tech debt quadrants: Reckless and Prudent vs. Deliberate Inadvertent" /></p>
+<p>Tests, in fact untested code, should also be considered a tech debt. I have, multiple times, in my career decided to deliver a "working software" to showcase the product before a <strong>well tested working software</strong>. However, once the proof of concept evolved, my team paid this recklessness cost later, and this was a larger cost than just delivering tested code from the start. So, my position is that <strong>untested code is deliberate reckless tech debt</strong> as we should have planned the test cases beforehand and implement the code as we test it.</p>
+<p>Untested code is very common in game development, where people like to prototype untested games and evolve from there without adding tests. Also, people usually avoid at all costs automated test for gameplay, which 99% of the time is the cause of recurrent bugs. At some point, when people decide to add tests, it is usually just too late or too hard, meaning you a set of useless tests.</p>
+<blockquote>
+<p><strong>In short</strong>: Tech Debt is like a bad loan, the quicker we pay it, the less we suffer from it.</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>
