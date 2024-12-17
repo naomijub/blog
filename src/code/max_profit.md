@@ -75,6 +75,8 @@ pub fn max_profit(prices: Vec<i32>) -> i32 {
 
 To begin, we create an iterator, `prices.iter()`, then we consume this iterator with a `fold`, where the `accumulator` is a tuple consisting of the minimal value, same as before, and a maximum profit starting as `0`. Then, in the `fold` loop, we already return a tuple containing the new minimum, `value.min(min)`, as the first element, and the new maximum profit `max_profit.max(value - min)`, as the second element. After we have consumed all the iterator, just return the second element of the resulting tuple.
 
+> Benchmark wise both solutions were equivalent in execution time and memory using criterion and memory-stats crates.
+
 ##  Best Time to Buy and Sell Stock (Medium/122):
 
 "_You are given an integer array prices where `prices[i]` is the price of a given stock on the ith day._
