@@ -228,7 +228,17 @@ there to ensure the merge result can fit in nums1.
     nums1.sort();
 }
 <span class="boring">}</span></code></pre></pre>
-<p>According to Leetcode, this has a Runtime of 1 ms and a Memory consumption of 2.1 MB, not a bad start.</p>
+<p>A final style touch to this code is that we don't need to pass a mutable reference to a <code>Vec&lt;i32&gt;</code>, we can just pass <code>&amp;mut &amp;[i32]</code>. Also, style wise, the correct way to express a range in a for loop is without <code>()</code>, so we should rewrite the for loop as <code>for num2_index in 0..n</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge_naive(nums1: &amp;mut [i32], m: i32, nums2: &amp;mut [i32], n: i32) {
+    for nums2_index in 0..n {
+        nums1[(m + nums2_index) as usize] = nums2[nums2_index as usize];
+    }
+    nums1.sort();
+}
+<span class="boring">}</span></code></pre></pre>
+<p>According to benchmarks using criterion and memory-stats, for only the first example the execution time is around 7.8 ns and 40 KB of memory (all relative to my machine). For the largest example I have it has an execution time of 1 ms and a Memory consumption of 2.19 MB, not a bad start.</p>
 <h2 id="less-procedural"><a class="header" href="#less-procedural">Less procedural</a></h2>
 <p>Rust has a great function to solve this problem and to solve my problem with for loops, it is called <code>splice</code>. <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.splice">Splice</a> receives a mutable reference to the vector, a range of points to splice (<code>replace_with</code>) the vector, and an <code>IntoIterator</code> to loop. The following code represents the solving of this problem with this function:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -236,19 +246,29 @@ there to ensure the merge result can fit in nums1.
 </span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
     let m = m as usize;
     let n = n as usize;
-    let _ = nums1.splice(m..m+n, nums2.to_owned()).collect::&lt;Vec&lt;i32&gt;&gt;();
+    nums1.splice(m..m+n, nums2.to_owned());
     nums1.sort();
 }
 <span class="boring">}</span></code></pre></pre>
-<p>This is significantly more memory efficient than the for loop, that consumes around 2.19 MB, while this approach consumes only around 2.02 MB. However, performance wise, their are more or less the same. One thing I don't like in this exact code is <code>m+n</code> range ending, as we could consider for this problem <code>n+m == nums1.len()</code>, so the whole function would look like:</p>
+<p>One thing I don't like in this exact code is <code>m+n</code> range ending, as we could consider for this problem <code>n+m == nums1.len()</code>, so the whole function would look like:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut Vec&lt;i32&gt;, n: i32) {
     let m = m as usize;
-    let _ = nums1.splice(m.., nums2.to_owned()).collect::&lt;Vec&lt;i32&gt;&gt;();
+    let _ = nums1.splice(m.., nums2.to_owned());
     nums1.sort();
 }
 <span class="boring">}</span></code></pre></pre>
+<p>Another take on this, would be to use the n variable with a <code>take</code> function, as well as simplify the use case of the <code>&amp; mut Vec&lt;i32&gt;</code> where Vec is not needed:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn merge(nums1: &amp;mut Vec&lt;i32&gt;, m: i32, nums2: &amp;mut [i32], n: i32) {
+    let m = m as usize;
+    nums1.splice(m.., nums2.iter().copied().take(n as usize));
+    nums1.sort();   
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This is about 10% more memory efficient and 10% less performatic than the for loop, that consumed around  40 KB for the first example, while this approach consumes only around 36 KB, for the largest test case. Performance wise, this approach being about 10% less performatic with 8.5 ns. Another interesting addition of using <code>splice</code> is that if we <code>collect::&lt;Vec&lt;i32&gt;&gt;()</code> the splice, we can return the exactly elements that were replaced by paying the allocation cost of a new <code>Vec&lt;i32&gt;</code>.</p>
 <p>"<em>But Julia! you are using std functions to solve this problem!</em>". Yes! young padawan, why recreate the wheel? But if you really want, here is a guide:</p>
 <ol>
 <li><em>Check if the first <code>m</code> elements are <code>0</code>, if they are, just replace them with <code>nums2</code>.</em></li>
@@ -262,6 +282,11 @@ there to ensure the merge result can fit in nums1.
 <p>For the previous guide, a more functional approach can be using fold and collecting the elements in a new vector. A pure functional way would require returning that list and avoiding mutability. However, that would fail leetcode test cases, so it will need to be assigned to <code>nums1</code>. I would risk saying that <code>m</code> and  <code>n</code> are useless in a more functional Rust.</p>
 <blockquote>
 <p>If you need help, you can open an issue in the repo</p>
+<h2 id="benchmark-dependencies"><a class="header" href="#benchmark-dependencies">Benchmark dependencies:</a></h2>
+<pre><code class="language-toml">[dev-dependencies]
+criterion = "0.4"
+memory-stats = "1"
+</code></pre>
 </blockquote>
 
                     </main>
