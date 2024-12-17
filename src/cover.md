@@ -17,7 +17,7 @@ This blog is where I share my ideas and processes regarding software engineer, f
 I'm a lead software engineer with experience in web services, project migrations, Rust and cloud. Some notable places I've worked are:
 
 - Nubank as Lead Software Engineer:
-    - I worked on integrating transfers (Pix) and payments to checkings account. The technologies I used were `Clojure`, `Apache Kafka`, `Datomic`, `AWS`, `Flutter`.
+    - I worked on integrating transfers (Pix) and payments to checkins account. The technologies I used were `Clojure`, `Apache Kafka`, `Datomic`, `AWS`, `Flutter`.
     - [Edn-rs](https://github.com/naomijub/edn-rs), `Clojure`'s `EDN` format support for `Rust`
     - [Edn-derive](https://github.com/evaporei/edn-derive), derive macros for edn-rs
     - [Brcode](https://github.com/naomijub/brcode), Pix QR Code parser in `Rust` with FFI versions in `Dart`, `Clojure`, `Typescipr`, `Java`.
