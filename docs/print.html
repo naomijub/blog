@@ -247,36 +247,141 @@
 <li><a href="https://github.com/naomijub/kotlin-exercism">Kotlin Exercism Solutions</a></li>
 <li><a href="https://github.com/TrioDeTres/MarioKart-5.4">Mario Kart Multiplayer Demo in Unity 5</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-programming"><a class="header" href="#functional-programming">Functional Programming</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="function-composition-and-partial-functions-in-rust"><a class="header" href="#function-composition-and-partial-functions-in-rust">Function Composition and Partial Functions in Rust</a></h1>
 <div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
-<tr><td>2024-12-15</td><td>Insights on Functional Programming</td><td>Functional Programming, Insights, Guide</td></tr>
+<tr><td>2024-12-20</td><td>Function Composition in Rust</td><td>Functional Programming, Rust, Composition</td></tr>
 </tbody></table>
 </div>
-<p>How can we start a functional programming-centred blog without talking about functional programming? Although I started programming with C++ version 98, I'm far from a fan of object-oriented programming. Back then, my code was mostly imperative and procedural. Same goes with Python, the second language I learned. Things started changing when I was doing my bachelor's in applied mathematics and my dislike for MatLab, which made me search for classes that were using anything but MatLab, which meant Haskell and Lisp. Lisp had a very interesting approach for a mathematician, as it used the same computational logic as my graphic HP calculator, so I would always aim for classes that were in Lisp (or, for some weird reason, Pascal).</p>
-<p>Fast forward over a decade, and everyone that has personally talked to me about programming knows I am passionate about functional programming, and more so, I have experience making non-fp code bases become functional, as well as writing a lot of content about functional programming, especially in Rust, Java, C# and Clojure. So the passion is evident, but <strong>what are the benefits of FP?</strong></p>
+<p>In my latest post, about <a href="blog/./functional_programming.html">functional programming</a> I talked about Composition and Higher Order functions, but it was merely a theoretical topic, but today I want to introduce examples of function composition and partial functions in Rust, comparing to other languages.</p>
+<h2 id="introduction"><a class="header" href="#introduction">Introduction</a></h2>
+<p>This is something that has been in my mind for a while, but recently a friend of mine asked how my project deals with unit testing functions that have <em>side effects</em>, and my answer was "Higher order functions and function composition". This is something that I have done to the Java/Clojure project we worked together at Thoughtworks some time ago, and I used it as a reminder to that friend. However, more than a reminder to them, I remembered a really old (2019) <a href="https://github.com/naomijub/rust-compose">composition Rust project</a> I did:</p>
+<pre><pre class="playground"><code class="language-rust">fn compose&lt;A, B, C, G, F&gt;(f: F, g: G) -&gt; impl Fn(A) -&gt; C
+where
+    F: Fn(A) -&gt; B,
+    G: Fn(B) -&gt; C,
+{
+    move |x| g(f(x))
+}
+
+fn main() {
+    let add_and_multiply = compose(|x| x * 3f32, |x| x + 3f32);
+    let divide_and_subtract = compose(|x| x / 3f32, |x| x - 3f32);
+
+    let composed = compose(add_and_multiply, divide_and_subtract);
+    println!("Result is {}", composed(20f32));
+}</code></pre></pre>
+<p>But now I want to take my time to explain this code and how it would look now.</p>
+<h2 id="what-is-function-composition"><a class="header" href="#what-is-function-composition">What is Function Composition</a></h2>
+<p>Function composition is a powerful concept in programming that allows developers to build complex logic by combining functions. It is core to the functional programming paradigm. It allows developers to combine 2 or more functions producing a new function, using functions as input arguments and return types to other functions. mathematically it means that giver the functions <code>f(x)</code> and <code>g(x)</code>, their composition, <code>h(x)</code> can be expressed as:</p>
+<pre><code>h(x) = g(f(x))
+</code></pre>
+<p>The main purposes of function composition are:</p>
 <ul>
-<li>
-<p><strong>Referential Transparency</strong>, with the use of pure functions your objects don't necessary own data and mutate their own state, you start having Instances/Namespaces/Objects that act on data passed to them, helping testability and providing a safer and more predictable way to understand the state of your data.</p>
-</li>
-<li>
-<p><strong>Immutability</strong>. At one point, I read in a Clojure book about the fact that if you have mutability, you know nothing about the state of your application, and so, you cannot make any predictions about its behaviour. This is not the case when you deal with immutable code, at any moment in time, when you take a snapshot of your data, you can clearly predict its next state based on <code>x, y, z</code> functions.</p>
-</li>
-<li>
-<p><strong>Composition and higher order functions</strong> are another key aspect and has a lot to do with a simpler way to deal with functions that contain side effects. By using composition, we can always guarantee that our code is predictable, a very interesting feature for testing. Let's use the general example of random data. I have a function that needs to define the initial direction something is moving, but that direction cannot be always the same, so we need random data. However, it makes it very hard to test, as we now have lost prediction of results. However, by passing a function that handles randomize data, we mock that function in test cases to return a desired value.</p>
-</li>
-<li>
-<p><strong>Concurrency</strong>. Off-course concurrency is not a functional programming restricted topic, but the previous attributes that we discussed, make it so much clearer on how to deal with it.</p>
-</li>
+<li><strong>Reusability</strong>: Reuse smaller, tested functions to build more complex logic.</li>
+<li><strong>Readability</strong>: Make code more declarative by abstracting low-level details, giving more appropriate namings to blocks.</li>
+<li><strong>Testability</strong>: Test smaller components independently, and manipulate complex function creating functions that act like mocks for their specific case.</li>
 </ul>
+<h2 id="implementing-function-composition-in-rust"><a class="header" href="#implementing-function-composition-in-rust">Implementing Function Composition in Rust</a></h2>
+<p>Rust is not necessarily the easiest language to do function composition. However, it is quite expressive in its robustness to do so. Meaning that we can achieve it through closures and <code>Fn</code> traits. Let's first go over a simpler case, given the functions:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn duplicate(x: i32) -&gt; i32 {
+    x * 2
+}
+
+fn square(x: i32) -&gt; i32 {
+    x * x
+}
+<span class="boring">}</span></code></pre></pre>
+<p>We want to compose them in a way that we square <code>x</code> after <code>duplicating</code> it. It could easily be done by calling <code>square(duplicate(3))</code>, but this is not actually composition, and makes our life a bit harder to read over a long pipe, so we want to be able to compose it as follows <code>compose(duplicate, square)</code>, meaning that we will first <code>duplicate</code> and then <code>square</code> it. Which means that now we have to understand how the <code>compose</code> function works:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn compose(f: impl Fn(i32) -&gt; i32, g: impl Fn(i32) -&gt; i32) -&gt; impl Fn(i32) -&gt; i32 {
+    move |x| g(f(x))
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Compose receives as argument two function implementations of trait <code>Fn</code>, <code>f</code> and <code>g</code>, both of them receive receive as argument a type <code>i32</code> and return a type <code>i32</code>, then we define <code>h(x)</code> as <code>g(f(x))</code>, which can be transformed into a function by applying move the closure <code>|x| g(f(x))</code>.</p>
 <blockquote>
-<p>A few books that I can recommend for learning how to become functional thinking or how expand your fp insights are:</p>
+<p>In the first versions of Rust, this was possible by using the <code>Box</code> pointer. If you read Portuguese, you can learn a bit more about this in my book <a href="https://www.casadocodigo.com.br/products/livro-rust-funcional-concorrente">Programação Funcional e Concorrente em Rust</a>.</p>
 </blockquote>
+<p>Now that we have defined the compose function, we can use it to compose the two functions we created <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=cc0bb3f79f79918d22b8c5b5a600e38b">(Rust Playground)</a>:</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let double_then_square = compose(duplicate, square);
+    println!("Anonymous composition: {}", compose(duplicate, square)(3)); // Output: 36
+    println!("Named composition:     {}", double_then_square(3));         // Output: 36
+}</code></pre></pre>
+<p>There are two ways of using the result from <code>compose</code>:</p>
 <ul>
-<li>Clojure Applied by Ben Vandgrift and Alex Miller</li>
-<li>Domain Modeling Made Functional by Scott Wlaschin</li>
-<li>Adopting Elixir by Ben Marx, Bruce Tate and José Valim</li>
-<li>Becoming Functional by Joshua Backfield</li>
-<li>Functional Thinking by Neal Ford</li>
+<li>Assign it to a variable and use it as a named function, in our case <code>double_then_square</code>.</li>
+<li>Call it anonymously with the desired <code>x</code> value, as <code>compose(duplicate, square)(3)</code>.</li>
+</ul>
+<p>Some other use cases that are common in Rust ecosystem:</p>
+<ul>
+<li><strong>Data Transformation Pipelines</strong>: Transforming streams of data in a structured manner.</li>
+<li><strong>Middleware in Web Frameworks</strong>: Combining pre-processing and post-processing logic.</li>
+<li><strong>Chained Operations</strong>: Complex mathematical computations or algorithms.</li>
+</ul>
+<h3 id="comparing-to-c"><a class="header" href="#comparing-to-c">Comparing to C++</a></h3>
+<p>To those that know that I complain a lot about functional programming in C++, I know it possible achieve it using function pointers, lambda expressions, and higher-order functions from libraries like <code>&lt;functional&gt;</code> and it looks a lot like what Rust looks like, we just have to consider that <code>impl Fn(i32) -&gt; i32</code> becomes the function pointer <code>std::function&lt;int(int)&gt;</code>.</p>
+<pre><code class="language-c++">#include &lt;iostream&gt;
+#include &lt;functional&gt;
+
+int duplicate(int x) {
+    return x * 2;
+}
+
+int square(int x) {
+    return x * x;
+}
+
+std::function&lt;int(int)&gt; compose(std::function&lt;int(int)&gt; f, std::function&lt;int(int)&gt; g) {
+    return [f, g](int x) { return g(f(x)); };
+}
+
+int main() {
+    auto double_then_square = compose(duplicate, square);
+    std::cout &lt;&lt; "Anonymous composition: " &lt;&lt; compose(duplicate, square)(3) &lt;&lt; std::endl; // Output: 36
+    std::cout &lt;&lt; "Named composition: "     &lt;&lt; double_then_square(3)         &lt;&lt; std::endl; // Output: 36
+    return 0;
+}
+</code></pre>
+<p>While both Rust and C++ allow function composition, Rust’s type system and functional idioms make the process more expressive and safer. The lack of null pointers and the Option type help avoid runtime errors. Also, we can easily make the compose function more generic with generics, which is not as easy in C++:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn compose&lt;T&gt;(f: impl Fn(T) -&gt; T, g: impl Fn(T) -&gt; T) -&gt; impl Fn(T) -&gt; T {
+    move |x| g(f(x))
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="partial-functions-in-rust"><a class="header" href="#partial-functions-in-rust">Partial Functions in Rust</a></h2>
+<p>Partial functions are somewhat similar to function composition, but we define a function to a subset of the possible values that it can receive, as if it was using a constant value instead of a function. In this case, I want to extrapolate partial functions from Clojure's <a href="https://clojuredocs.org/clojure.core/partial"><code>partial</code></a> function.</p>
+<p>Clojure's <code>partial</code> is a core language utility that allows to pre-fill arguments to a function, creating a new function with fewer parameters. Could say that it is quite common for testing <code>Dal</code> like structures that require a lot of configuration. So let's consider the following example:</p>
+<pre><code class="language-clojure">(defn multiply [a b]
+  (* a b))
+
+(def multiply-by-three (partial multiply 3))
+
+(println (multiply-by-three 4)) ; Output: 12
+</code></pre>
+<p>We have the function <code>multiply</code>, but we only care about the case where multiply has the first element set to <code>3</code>, binding it as <code>multiply-by-three</code> from <code>(partial multiply 3)</code>, then we can just call it <code>(multiply-by-three 4)</code>. The caveat from Clojure side is that partial can only be applied to the first <code>n</code> arguments, while Rust gives you a bit more control over that.</p>
+<p>The following <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=9dd36547e1566b5e232e405555591d87">Rust code</a> is a translation of the previous Clojure code with a twist of having the partial applied to the second argument, demonstrating how Rust enables a bit more control over this:</p>
+<pre><pre class="playground"><code class="language-rust">fn multiply(a: i32, b: i32) -&gt; i32 {
+    a * b
+}
+
+fn partial_multiply(b: i32) -&gt; impl Fn(i32) -&gt; i32 {
+    move |a| multiply(a, b)
+}
+
+fn main() {
+    let multiply_by_four = partial_multiply(4);
+    println!("Result: {}", multiply_by_four(3)); // Output: 12
+}</code></pre></pre>
+<p><code>multiply</code> function is exactly the same. However, the <code>partial</code> application of multiply, shifts which argument we are applying the partiality, as we create <code>multiply_by_four</code> applying <code>partial_multiply</code> to <code>b</code>, instead of <code>a</code>. Note that we can apply <code>multiply_by_four</code> multiple times and always having the guarantee that we will multiply by <code>4</code>.</p>
+<p>Use Cases of Partial Functions</p>
+<ul>
+<li><strong>Pre-binding Arguments</strong>: Useful when testing functions that require a lot of configuration, or event-driven architectures where some functions take repetitive arguments over and over.</li>
+<li><strong>Currying Simulation</strong>: Breaking down multi-argument functions into simpler, single-argument functions.</li>
+<li><strong>Code Reusability</strong>: Creating specific versions of generic functions, useful for simplifying test cases as well.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="my-coding-problems-and-code-examples"><a class="header" href="#my-coding-problems-and-code-examples">My Coding Problems and Code Examples</a></h1>
 <ul>
@@ -543,7 +648,143 @@ memory-stats = "1"
 <li><a href="./blog/functional_programming.html">2024-12-15: Functional Programming</a></li>
 <li><a href="./blog/tech_debt.html">2024-12-10: Tech Debt</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-programming-1"><a class="header" href="#functional-programming-1">Functional Programming</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="function-composition-and-partial-functions-in-rust-1"><a class="header" href="#function-composition-and-partial-functions-in-rust-1">Function Composition and Partial Functions in Rust</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
+<tr><td>2024-12-20</td><td>Function Composition in Rust</td><td>Functional Programming, Rust, Composition</td></tr>
+</tbody></table>
+</div>
+<p>In my latest post, about <a href="blog/./functional_programming.html">functional programming</a> I talked about Composition and Higher Order functions, but it was merely a theoretical topic, but today I want to introduce examples of function composition and partial functions in Rust, comparing to other languages.</p>
+<h2 id="introduction-1"><a class="header" href="#introduction-1">Introduction</a></h2>
+<p>This is something that has been in my mind for a while, but recently a friend of mine asked how my project deals with unit testing functions that have <em>side effects</em>, and my answer was "Higher order functions and function composition". This is something that I have done to the Java/Clojure project we worked together at Thoughtworks some time ago, and I used it as a reminder to that friend. However, more than a reminder to them, I remembered a really old (2019) <a href="https://github.com/naomijub/rust-compose">composition Rust project</a> I did:</p>
+<pre><pre class="playground"><code class="language-rust">fn compose&lt;A, B, C, G, F&gt;(f: F, g: G) -&gt; impl Fn(A) -&gt; C
+where
+    F: Fn(A) -&gt; B,
+    G: Fn(B) -&gt; C,
+{
+    move |x| g(f(x))
+}
+
+fn main() {
+    let add_and_multiply = compose(|x| x * 3f32, |x| x + 3f32);
+    let divide_and_subtract = compose(|x| x / 3f32, |x| x - 3f32);
+
+    let composed = compose(add_and_multiply, divide_and_subtract);
+    println!("Result is {}", composed(20f32));
+}</code></pre></pre>
+<p>But now I want to take my time to explain this code and how it would look now.</p>
+<h2 id="what-is-function-composition-1"><a class="header" href="#what-is-function-composition-1">What is Function Composition</a></h2>
+<p>Function composition is a powerful concept in programming that allows developers to build complex logic by combining functions. It is core to the functional programming paradigm. It allows developers to combine 2 or more functions producing a new function, using functions as input arguments and return types to other functions. mathematically it means that giver the functions <code>f(x)</code> and <code>g(x)</code>, their composition, <code>h(x)</code> can be expressed as:</p>
+<pre><code>h(x) = g(f(x))
+</code></pre>
+<p>The main purposes of function composition are:</p>
+<ul>
+<li><strong>Reusability</strong>: Reuse smaller, tested functions to build more complex logic.</li>
+<li><strong>Readability</strong>: Make code more declarative by abstracting low-level details, giving more appropriate namings to blocks.</li>
+<li><strong>Testability</strong>: Test smaller components independently, and manipulate complex function creating functions that act like mocks for their specific case.</li>
+</ul>
+<h2 id="implementing-function-composition-in-rust-1"><a class="header" href="#implementing-function-composition-in-rust-1">Implementing Function Composition in Rust</a></h2>
+<p>Rust is not necessarily the easiest language to do function composition. However, it is quite expressive in its robustness to do so. Meaning that we can achieve it through closures and <code>Fn</code> traits. Let's first go over a simpler case, given the functions:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn duplicate(x: i32) -&gt; i32 {
+    x * 2
+}
+
+fn square(x: i32) -&gt; i32 {
+    x * x
+}
+<span class="boring">}</span></code></pre></pre>
+<p>We want to compose them in a way that we square <code>x</code> after <code>duplicating</code> it. It could easily be done by calling <code>square(duplicate(3))</code>, but this is not actually composition, and makes our life a bit harder to read over a long pipe, so we want to be able to compose it as follows <code>compose(duplicate, square)</code>, meaning that we will first <code>duplicate</code> and then <code>square</code> it. Which means that now we have to understand how the <code>compose</code> function works:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn compose(f: impl Fn(i32) -&gt; i32, g: impl Fn(i32) -&gt; i32) -&gt; impl Fn(i32) -&gt; i32 {
+    move |x| g(f(x))
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Compose receives as argument two function implementations of trait <code>Fn</code>, <code>f</code> and <code>g</code>, both of them receive receive as argument a type <code>i32</code> and return a type <code>i32</code>, then we define <code>h(x)</code> as <code>g(f(x))</code>, which can be transformed into a function by applying move the closure <code>|x| g(f(x))</code>.</p>
+<blockquote>
+<p>In the first versions of Rust, this was possible by using the <code>Box</code> pointer. If you read Portuguese, you can learn a bit more about this in my book <a href="https://www.casadocodigo.com.br/products/livro-rust-funcional-concorrente">Programação Funcional e Concorrente em Rust</a>.</p>
+</blockquote>
+<p>Now that we have defined the compose function, we can use it to compose the two functions we created <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=cc0bb3f79f79918d22b8c5b5a600e38b">(Rust Playground)</a>:</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let double_then_square = compose(duplicate, square);
+    println!("Anonymous composition: {}", compose(duplicate, square)(3)); // Output: 36
+    println!("Named composition:     {}", double_then_square(3));         // Output: 36
+}</code></pre></pre>
+<p>There are two ways of using the result from <code>compose</code>:</p>
+<ul>
+<li>Assign it to a variable and use it as a named function, in our case <code>double_then_square</code>.</li>
+<li>Call it anonymously with the desired <code>x</code> value, as <code>compose(duplicate, square)(3)</code>.</li>
+</ul>
+<p>Some other use cases that are common in Rust ecosystem:</p>
+<ul>
+<li><strong>Data Transformation Pipelines</strong>: Transforming streams of data in a structured manner.</li>
+<li><strong>Middleware in Web Frameworks</strong>: Combining pre-processing and post-processing logic.</li>
+<li><strong>Chained Operations</strong>: Complex mathematical computations or algorithms.</li>
+</ul>
+<h3 id="comparing-to-c-1"><a class="header" href="#comparing-to-c-1">Comparing to C++</a></h3>
+<p>To those that know that I complain a lot about functional programming in C++, I know it possible achieve it using function pointers, lambda expressions, and higher-order functions from libraries like <code>&lt;functional&gt;</code> and it looks a lot like what Rust looks like, we just have to consider that <code>impl Fn(i32) -&gt; i32</code> becomes the function pointer <code>std::function&lt;int(int)&gt;</code>.</p>
+<pre><code class="language-c++">#include &lt;iostream&gt;
+#include &lt;functional&gt;
+
+int duplicate(int x) {
+    return x * 2;
+}
+
+int square(int x) {
+    return x * x;
+}
+
+std::function&lt;int(int)&gt; compose(std::function&lt;int(int)&gt; f, std::function&lt;int(int)&gt; g) {
+    return [f, g](int x) { return g(f(x)); };
+}
+
+int main() {
+    auto double_then_square = compose(duplicate, square);
+    std::cout &lt;&lt; "Anonymous composition: " &lt;&lt; compose(duplicate, square)(3) &lt;&lt; std::endl; // Output: 36
+    std::cout &lt;&lt; "Named composition: "     &lt;&lt; double_then_square(3)         &lt;&lt; std::endl; // Output: 36
+    return 0;
+}
+</code></pre>
+<p>While both Rust and C++ allow function composition, Rust’s type system and functional idioms make the process more expressive and safer. The lack of null pointers and the Option type help avoid runtime errors. Also, we can easily make the compose function more generic with generics, which is not as easy in C++:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn compose&lt;T&gt;(f: impl Fn(T) -&gt; T, g: impl Fn(T) -&gt; T) -&gt; impl Fn(T) -&gt; T {
+    move |x| g(f(x))
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="partial-functions-in-rust-1"><a class="header" href="#partial-functions-in-rust-1">Partial Functions in Rust</a></h2>
+<p>Partial functions are somewhat similar to function composition, but we define a function to a subset of the possible values that it can receive, as if it was using a constant value instead of a function. In this case, I want to extrapolate partial functions from Clojure's <a href="https://clojuredocs.org/clojure.core/partial"><code>partial</code></a> function.</p>
+<p>Clojure's <code>partial</code> is a core language utility that allows to pre-fill arguments to a function, creating a new function with fewer parameters. Could say that it is quite common for testing <code>Dal</code> like structures that require a lot of configuration. So let's consider the following example:</p>
+<pre><code class="language-clojure">(defn multiply [a b]
+  (* a b))
+
+(def multiply-by-three (partial multiply 3))
+
+(println (multiply-by-three 4)) ; Output: 12
+</code></pre>
+<p>We have the function <code>multiply</code>, but we only care about the case where multiply has the first element set to <code>3</code>, binding it as <code>multiply-by-three</code> from <code>(partial multiply 3)</code>, then we can just call it <code>(multiply-by-three 4)</code>. The caveat from Clojure side is that partial can only be applied to the first <code>n</code> arguments, while Rust gives you a bit more control over that.</p>
+<p>The following <a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=9dd36547e1566b5e232e405555591d87">Rust code</a> is a translation of the previous Clojure code with a twist of having the partial applied to the second argument, demonstrating how Rust enables a bit more control over this:</p>
+<pre><pre class="playground"><code class="language-rust">fn multiply(a: i32, b: i32) -&gt; i32 {
+    a * b
+}
+
+fn partial_multiply(b: i32) -&gt; impl Fn(i32) -&gt; i32 {
+    move |a| multiply(a, b)
+}
+
+fn main() {
+    let multiply_by_four = partial_multiply(4);
+    println!("Result: {}", multiply_by_four(3)); // Output: 12
+}</code></pre></pre>
+<p><code>multiply</code> function is exactly the same. However, the <code>partial</code> application of multiply, shifts which argument we are applying the partiality, as we create <code>multiply_by_four</code> applying <code>partial_multiply</code> to <code>b</code>, instead of <code>a</code>. Note that we can apply <code>multiply_by_four</code> multiple times and always having the guarantee that we will multiply by <code>4</code>.</p>
+<p>Use Cases of Partial Functions</p>
+<ul>
+<li><strong>Pre-binding Arguments</strong>: Useful when testing functions that require a lot of configuration, or event-driven architectures where some functions take repetitive arguments over and over.</li>
+<li><strong>Currying Simulation</strong>: Breaking down multi-argument functions into simpler, single-argument functions.</li>
+<li><strong>Code Reusability</strong>: Creating specific versions of generic functions, useful for simplifying test cases as well.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functional-programming"><a class="header" href="#functional-programming">Functional Programming</a></h1>
 <div class="table-wrapper"><table><thead><tr><th>date</th><th>Description</th><th>Keywords</th></tr></thead><tbody>
 <tr><td>2024-12-15</td><td>Insights on Functional Programming</td><td>Functional Programming, Insights, Guide</td></tr>
 </tbody></table>
